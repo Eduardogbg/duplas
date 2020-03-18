@@ -20,7 +20,7 @@ bot.on('message', async message => {
     }
   } catch (err) {
     bot.channels.cache.get(ERROR_CHANNEL).send(`Erro: ${err.message}`);
-    console.error("Erro no message listener", err);
+    console.error("Erro no message listener", err, err.stack);
   } 
 });
 

@@ -173,7 +173,7 @@ async function executeNickname(client, message) {
   const nickname = matchNickname.exec(content)[1];
   await member.setNickname(nickname);
   
-  const previous = nicknameService.query(client, { nickname });
+  const previous = await nicknameService.query(client, { nickname });
   if (previous) {
     await nicknameService.edit(previous, id, nickname);
   } else {
