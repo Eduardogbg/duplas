@@ -4,12 +4,12 @@
   "description": "Discord bot for SitePoint",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "Michiel Mulders",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "discord.js": "^12.0.2",
     "dotenv": "^8.2.0"
   }
 }
