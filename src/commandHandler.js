@@ -1,3 +1,4 @@
+const constants = require('./constants');
 const { get: getGuild } = require('./services/guild');
 const duoService = require('./services/duo');
 const memberService = require('./services/member');
@@ -18,6 +19,8 @@ const matchDuplas = /^\/duplas (\w+)/;
 const matchDuplasCriar = /^\/duplas criar "(.+)"$/;
 const matchDuplasEntrar = /^\/duplas entrar "(.+)"$/;
 const matchDuplasSair = /^\/duplas sair$/;
+const matchDuplasCor = /^\/duplas cor (\w+|#[0-9A-Fa-f]{6})$/;
+const matchHexString = /^#[0-9A-Fa-f]{6}$/;
 
 
 const getComandos = client => getGuild(client)
@@ -95,14 +98,14 @@ async function executeDuplasSair(client, message) {
 
   const valid = matchDuplasSair.test(content);
   if (!valid) {
-    return await usageError();
+    return await usageError(client);
   }
 
-  const duoRole = roles && roles.cache.first();
-  if (!duoRole) {
-    return await leavingNowhere();
+  if (!roles.cache.size > 1) {
+    return await leavingNowhere(client);
   }
-
+  
+  const duoRole = roles.cache.first();
   await roles.remove(duoRole);
   const membership = await memberService.query(client, { member: memberId });
   await memberService.delete(membership);
@@ -112,6 +115,27 @@ async function executeDuplasSair(client, message) {
     await duoService.delete(duo);
     await duoRole.delete();
   }
+}
+
+async function executeDuplasCor(client, message) {
+  const { member, content } = message;
+  const { roles } = member;
+  
+  const valid = matchDuplasCor.test(content);
+  if (!valid) {
+    return await usageError(client);
+  }
+
+  if (!roles.cache.size > 1) {
+    return await leavingNowhere(client);
+  }
+
+  const color = matchDuplasCor.exec(content)[1];
+  if (!matchHexString.test(color) && !constants.colors.includes(color)) {
+    return await client.send("Cor inválida.");
+  }
+
+  await roles.cache.first().setColor(color);
 }
 
 async function handleDuplas(client, message) {
@@ -130,6 +154,8 @@ async function handleDuplas(client, message) {
       return await executeDuplasEntrar(client, message);
     case 'sair':
       return await executeDuplasSair(client, message);
+    case 'cor':
+      return await executeDuplasCor(client, message);
     default:
       return await usageError(client);
   }
