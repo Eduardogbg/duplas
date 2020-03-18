@@ -9,12 +9,20 @@ const getDatabaseDuo = client => getGuild(client)
 
 const matcher = query => {
   const { id, name } = query;
-  const matcher = [];
-  
-  if (id) matcher.concat[`${id}`];
-  if (name) matcher.concat[`"${name}"`];
-  
-  return new RegExp(matcher.join(' '));
+
+  return ({ content }) => {
+    let match = true;
+
+    if (id) {
+      match = match && content.startsWith(id);
+    }
+
+    if (name) {
+      match = match && content.endsWith(`"${name}"`);
+    }
+
+    return match;
+  }
 }
 
 function create(client, roleId, name) {
@@ -26,7 +34,7 @@ async function query(client, query) {
     .messages
     .fetch({ limit: 100 });
 
-  return duplaMessages.find(m => matcher(query).test(m.content));
+  return duplaMessages.find(matcher(query));
 }
 
 function _delete(duo) {

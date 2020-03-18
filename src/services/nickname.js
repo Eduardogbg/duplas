@@ -9,12 +9,20 @@ const getDatabaseNickname = client => getGuild(client)
 
 const matcher = query => {
   const { id, nickname } = query;
-  const matcher = [];
 
-  if (id) matcher.concat[`${id}`];
-  if (nickname) matcher.concat[`"${nickname}"`];
+  return ({ content }) => {
+    let match = true;
 
-  return new RegExp(matcher.join(' '));
+    if (id) {
+      match = match && content.startsWith(id);
+    }
+
+    if (nickname) {
+      match = match && content.endsWith(`"${nickname}"`);
+    }
+
+    return match;
+  }
 }
 
 function create(client, memberId, nickname) {
@@ -26,7 +34,7 @@ async function query(client, query) {
     .messages
     .fetch({ limit: 100 });
   
-  return nicknameMessages.find(m => matcher(query).test(m.content));
+  return nicknameMessages.find(matcher(query));
 }
 
 function edit(nicknameMessage, memberId, nickname) {

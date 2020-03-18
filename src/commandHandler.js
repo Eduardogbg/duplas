@@ -34,9 +34,9 @@ const getDuplas = client => getGuild(client)
   .get(DUPLAS_CHANNEL);
 
 const makeDuoMessage = (name, [members]) => `
-${name}
-- ${members[0].nickname}
-- ${members[1].nickname}
+**${name}**
+  - <@${members[0].id}>
+  - <@${members[1].id}>
 `;
 
 const usageError = client => getComandos(client).send(USAGE_ERROR_MESSAGE);
@@ -56,7 +56,7 @@ async function executeDuplasCriar(client, message) {
 
   const name = matchDuplasCriar.exec(content)[1];
 
-  const roleData = { data: { name } };
+  const roleData = { data: { name, hoist: true } };
   const role = await getGuild(client).roles.create(roleData);
   await member.roles.add(role);
   
@@ -173,7 +173,7 @@ async function executeNickname(client, message) {
   const nickname = matchNickname.exec(content)[1];
   await member.setNickname(nickname);
   
-  const previous = await nicknameService.query(client, { nickname });
+  const previous = await nicknameService.query(client, { id });
   if (previous) {
     await nicknameService.edit(previous, id, nickname);
   } else {

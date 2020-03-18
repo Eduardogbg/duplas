@@ -10,12 +10,20 @@ const getDatabaseMember = client => getGuild(client)
 
 const matcher = query => {
   const { duo, member } = query;
-  const matcher = [];
 
-  if (duo) matcher.concat[`${duo}`];
-  if (member) matcher.concat[`${member}`];
+  return ({ content }) => {
+    let match = true;
 
-  return new RegExp(matcher.join(' '));
+    if (duo) {
+      match = match && content.startsWith(id);
+    }
+
+    if (member) {
+      match = match && content.endsWith(member);
+    }
+
+    return match;
+  }
 }
 
 function create(client, duoId, memberId) {
@@ -27,7 +35,7 @@ async function query(client, query) {
     .messages
     .fetch({ limit: 100 });
   
-  return memberMessages.find(m => matcher(query).test(m.content));
+  return memberMessages.find(matcher(query));
 }
 
 function _delete(membership) {
