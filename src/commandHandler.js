@@ -75,7 +75,7 @@ async function executeDuplasEntrar(client, message) {
   }
 
   const name = matchDuplasEntrar.exec(content)[1];
-  const role = getGuild(client).roles.find(r => r.name == name);
+  const role = getGuild(client).roles.cache.find(r => r.name == name);
   if (!role) {
     return await noDuo(client);
   }
@@ -88,7 +88,7 @@ async function executeDuplasEntrar(client, message) {
   await member.roles.add(role);
   const members = [firstMember, member];
 
-  await memberService.create(client, roleId, memberId);
+  await memberService.create(client, role.id, memberId);
   await getDuplas(client).send(makeDuoMessage(name, members));
 }
 
