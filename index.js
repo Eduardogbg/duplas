@@ -23,3 +23,10 @@ bot.on('message', async message => {
     console.error("Erro no message listener", err);
   } 
 });
+
+// Fucking Heroku
+const http = require('http');
+const server = new http.Server;
+server.listen(process.env.PORT, (...args) => {
+  console.log('HTTP', ...args);
+});
